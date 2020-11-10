@@ -89,7 +89,7 @@ public class ExtCacheManager implements CacheManager, SmartInitializingSingleton
             log.warn(LOG_PREFIX + " ExtCacheManager cannot be as a default CacheManager");
             return;
         }
-        log.info(LOG_PREFIX + " found defaultCacheManager -> {}", cacheManager);
+        log.info(LOG_PREFIX + " found defaultCacheManager [{}]", cacheManager);
         defaultCacheManager = cacheManager;
     }
     

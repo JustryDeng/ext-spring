@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -24,20 +25,25 @@ import java.util.concurrent.ThreadLocalRandom;
 public class TestExtRedisController {
     
     @GetMapping("/one")
-    @Cacheable(cacheNames = "cache-name123", key = "'one' + #param1")
+    @Cacheable(cacheNames = "JustryDeng", key = "'one' + #param1")
     public Object one(String param1) {
         return param1 + ThreadLocalRandom.current().nextInt(100);
     }
     
     @GetMapping("/two")
-    @ExtCacheable(cacheNames = "cache-name123", key = "'two' + #param1", redis = @Redis(useRedisTemplate = "redisTemplate",
-            expireTime = 100, expireStrategy = RedisExpireStrategyEnum.AUTO))
+    @ExtCacheable(cacheNames = "JustryDeng", key = "'two' + #param1",
+                  redis = @Redis(useRedisTemplate = "redisTemplate",
+                                 expireTime = 100,
+                                 timeUnit = ChronoUnit.MINUTES,
+                                 expireStrategy = RedisExpireStrategyEnum.AUTO
+                  )
+    )
     public Object two(String param1) {
         return param1 + ThreadLocalRandom.current().nextInt(100);
     }
     
     @GetMapping("/two2")
-    @ExtCacheable(cacheNames = "cache-name123", key = "'two2' + #param1", redis = @Redis(useRedisTemplate = "redisTemplate",
+    @ExtCacheable(cacheNames = "JustryDeng", key = "'two2' + #param1", redis = @Redis(useRedisTemplate = "redisTemplate",
             expireTime = 100, expireStrategy = RedisExpireStrategyEnum.CUSTOM))
     public Object two2(String param1) {
         return param1 + ThreadLocalRandom.current().nextInt(100);

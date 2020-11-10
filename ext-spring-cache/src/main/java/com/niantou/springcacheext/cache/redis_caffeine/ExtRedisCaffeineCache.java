@@ -1,8 +1,6 @@
 package com.niantou.springcacheext.cache.redis_caffeine;
 
 import com.niantou.springcacheext.author.JustryDeng;
-import com.niantou.springcacheext.cache.caffeine.ExtCaffeineCache;
-import com.niantou.springcacheext.cache.redis.ExtRedisCache;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -31,75 +29,77 @@ import java.util.concurrent.Callable;
 public class ExtRedisCaffeineCache implements Cache {
     
     @Nullable
-    private final ExtRedisCache extRedisCache;
+    private final Cache firstCache;
     
     @Nullable
-    private final ExtCaffeineCache extCaffeineCache;
+    private final Cache secondCache;
     
-    protected ExtRedisCaffeineCache(ExtRedisCache extRedisCache, ExtCaffeineCache extCaffeineCache) {
-        Assert.notNull(extRedisCache, "extRedisCache cannot be null");
-        Assert.notNull(extCaffeineCache, "extCaffeineCache cannot be null");
-        this.extRedisCache = extRedisCache;
-        this.extCaffeineCache = extCaffeineCache;
+    /**
+     * (若一级缓存没数据，二级缓存有数据), 是否回填二级缓存的数据至一级缓存
+     */
+    private final boolean valueBackFill;
+    
+    protected ExtRedisCaffeineCache(Cache firstCache, Cache secondCache, boolean valueBackFill) {
+        Assert.notNull(firstCache, "firstCache cannot be null");
+        Assert.notNull(secondCache, "secondCache cannot be null");
+        this.firstCache = firstCache;
+        this.secondCache = secondCache;
+        this.valueBackFill = valueBackFill;
     }
     
     @Override
     public void put(Object key, Object value) {
-        // 放redis
-        if (extRedisCache != null) {
-            extRedisCache.put(key, value);
+        if (firstCache != null) {
+            firstCache.put(key, value);
         }
-        // 放caffeine
-        if (extCaffeineCache != null) {
-            extCaffeineCache.put(key, value);
+        if (secondCache != null) {
+            secondCache.put(key, value);
         }
     }
     
     @Override
     public ValueWrapper putIfAbsent(Object key, Object value) {
-        // 放redis
         ValueWrapper valueWrapper = null;
-        if (extRedisCache != null) {
-            valueWrapper = extRedisCache.putIfAbsent(key, value);
+        if (firstCache != null) {
+            valueWrapper = firstCache.putIfAbsent(key, value);
         }
-        // 放caffeine
-        if (extCaffeineCache != null) {
-            valueWrapper = extCaffeineCache.putIfAbsent(key, value);
+        if (secondCache != null) {
+            valueWrapper = secondCache.putIfAbsent(key, value);
         }
         return valueWrapper;
     }
     
     @Override
     public void evict(Object key) {
-        if (extRedisCache != null) {
-            extRedisCache.evict(key);
+        if (firstCache != null) {
+            firstCache.evict(key);
         }
-        if (extCaffeineCache != null) {
-            extCaffeineCache.evict(key);
+        if (secondCache != null) {
+            secondCache.evict(key);
         }
     }
     
     @Override
     public boolean evictIfPresent(Object key) {
-        boolean redisResult = extRedisCache != null && extRedisCache.evictIfPresent(key);
-        boolean caffeineResult = extCaffeineCache != null && extCaffeineCache.evictIfPresent(key);
+        boolean redisResult = firstCache != null && firstCache.evictIfPresent(key);
+        boolean caffeineResult = secondCache != null && secondCache.evictIfPresent(key);
         return redisResult && caffeineResult;
     }
     
     @Override
     public void clear() {
-        if (extRedisCache != null) {
-            extRedisCache.clear();
+        if (firstCache != null) {
+            firstCache.clear();
         }
-        if (extCaffeineCache != null) {
-            extCaffeineCache.clear();
+        if (secondCache != null) {
+            secondCache.clear();
         }
     }
     
     @Override
     public boolean invalidate() {
-        boolean redisResult = extRedisCache != null && extRedisCache.invalidate();
-        boolean caffeineResult = extCaffeineCache != null && extCaffeineCache.invalidate();
+        boolean redisResult = firstCache != null && firstCache.invalidate();
+        boolean caffeineResult = secondCache != null && secondCache.invalidate();
         return redisResult && caffeineResult;
     }
     
@@ -107,11 +107,11 @@ public class ExtRedisCaffeineCache implements Cache {
     public String getName() {
         String name = null;
         
-        if (extRedisCache != null) {
-            name = extRedisCache.getName();
+        if (firstCache != null) {
+            name = firstCache.getName();
         }
-        if (StringUtils.isEmpty(name) && extCaffeineCache != null) {
-            name = extCaffeineCache.getName();
+        if (StringUtils.isEmpty(name) && secondCache != null) {
+            name = secondCache.getName();
         }
         return name;
     }
@@ -119,11 +119,11 @@ public class ExtRedisCaffeineCache implements Cache {
     @Override
     public Object getNativeCache() {
         Object nativeCache = null;
-        if (extRedisCache != null) {
-            nativeCache = extRedisCache.getNativeCache();
+        if (firstCache != null) {
+            nativeCache = firstCache.getNativeCache();
         }
-        if (Objects.isNull(nativeCache) && extCaffeineCache != null) {
-            nativeCache = extCaffeineCache.getNativeCache();
+        if (Objects.isNull(nativeCache) && secondCache != null) {
+            nativeCache = secondCache.getNativeCache();
         }
         return nativeCache;
     }
@@ -131,11 +131,15 @@ public class ExtRedisCaffeineCache implements Cache {
     @Override
     public ValueWrapper get(Object key) {
         ValueWrapper valueWrapper = null;
-        if (extRedisCache != null) {
-            valueWrapper = extRedisCache.get(key);
+        if (firstCache != null) {
+            valueWrapper = firstCache.get(key);
         }
-        if (valueWrapper == null && extCaffeineCache != null) {
-            valueWrapper = extCaffeineCache.get(key);
+        if (valueWrapper == null && secondCache != null) {
+            valueWrapper = secondCache.get(key);
+            // 二级缓存的数据回填至一级缓存
+            if (valueBackFill && valueWrapper != null && firstCache != null) {
+                firstCache.put(key, valueWrapper.get());
+            }
         }
         return valueWrapper;
     }
@@ -143,11 +147,11 @@ public class ExtRedisCaffeineCache implements Cache {
     @Override
     public <T> T get(Object key, Class<T> type) {
         T t = null;
-        if (extRedisCache != null) {
-            t = extRedisCache.get(key, type);
+        if (firstCache != null) {
+            t = firstCache.get(key, type);
         }
-        if (Objects.isNull(t) && extCaffeineCache != null) {
-            t = extCaffeineCache.get(key, type);
+        if (Objects.isNull(t) && secondCache != null) {
+            t = secondCache.get(key, type);
         }
         return t;
     }
@@ -155,11 +159,11 @@ public class ExtRedisCaffeineCache implements Cache {
     @Override
     public <T> T get(Object key, Callable<T> valueLoader) {
         @SuppressWarnings("DuplicatedCode") T t = null;
-        if (extRedisCache != null) {
-            t = extRedisCache.get(key, valueLoader);
+        if (firstCache != null) {
+            t = firstCache.get(key, valueLoader);
         }
-        if (Objects.isNull(t) && extCaffeineCache != null) {
-            t = extCaffeineCache.get(key, valueLoader);
+        if (Objects.isNull(t) && secondCache != null) {
+            t = secondCache.get(key, valueLoader);
         }
         return t;
     }

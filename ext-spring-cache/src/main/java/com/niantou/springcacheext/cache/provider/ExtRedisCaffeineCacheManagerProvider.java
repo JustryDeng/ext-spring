@@ -29,7 +29,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholderBase.REDIS_CAFFEINE_CAFFEINE_AS_FIRST_CACHE;
 import static com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholderBase.REDIS_CAFFEINE_RESPONSE_SPRING_CONTEXT_PLACEHOLDER;
+import static com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholderBase.REDIS_CAFFEINE_VALUE_BACK_FILL;
 
 /**
  * redis-caffeine CacheManager provider, 用于管理所有的 ExtRedisCaffeineCacheManager
@@ -54,6 +56,20 @@ public class ExtRedisCaffeineCacheManagerProvider implements CacheManagerProvide
      */
     @Value(REDIS_CAFFEINE_RESPONSE_SPRING_CONTEXT_PLACEHOLDER)
     private boolean responseSpringContext;
+    
+    /**
+     * 是否以caffeine作为一级缓存
+     *     true - caffeine作为一级缓存,redis作为二级缓存
+     *     false - redis作为一级缓存,caffeine作为二级缓存
+     */
+    @Value(REDIS_CAFFEINE_CAFFEINE_AS_FIRST_CACHE)
+    private boolean redisCaffeineCaffeineAsFirstCache;
+    
+    /**
+     * (若一级缓存没数据，二级缓存有数据), 是否回填二级缓存的数据至一级缓存
+     */
+    @Value(REDIS_CAFFEINE_VALUE_BACK_FILL)
+    private boolean redisCaffeineValueBackFill;
     
     @Autowired(required = false)
     private CacheProperties cacheProperties;
@@ -100,7 +116,11 @@ public class ExtRedisCaffeineCacheManagerProvider implements CacheManagerProvide
             while (iterator.hasNext()) {
                 ExtCacheableOop nextOop = iterator.next();
                 ExtCaffeineCacheManager extCaffeineCacheManager = generateExtCaffeineCacheManager(nextOop);
-                redisCacheManagerMap.put(nextOop, new ExtRedisCaffeineCacheManager(extRedisCacheManager, extCaffeineCacheManager));
+                redisCacheManagerMap.put(
+                        nextOop,
+                        new ExtRedisCaffeineCacheManager(extRedisCacheManager, extCaffeineCacheManager,
+                                redisCaffeineCaffeineAsFirstCache, redisCaffeineValueBackFill)
+                );
             }
         });
     }

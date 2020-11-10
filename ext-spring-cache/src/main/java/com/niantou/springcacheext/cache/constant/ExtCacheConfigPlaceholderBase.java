@@ -46,4 +46,16 @@ public abstract class ExtCacheConfigPlaceholderBase {
      */
     public static final String REDIS_CAFFEINE_RESPONSE_SPRING_CONTEXT_PLACEHOLDER = "${ext.spring.cache.redis-caffeine.response-spring-context:true}";
     
+    /**
+     * 是否以caffeine作为一级缓存
+     *     true - caffeine作为一级缓存,redis作为二级缓存
+     *     false - redis作为一级缓存,caffeine作为二级缓存
+     */
+    public static final String REDIS_CAFFEINE_CAFFEINE_AS_FIRST_CACHE = "${ext.spring.cache.redis-caffeine.caffeine-as-first-cache:true}";
+    
+    /**
+     * (若一级缓存没数据，二级缓存有数据), 是否回填二级缓存的数据至一级缓存
+     */
+    public static final String REDIS_CAFFEINE_VALUE_BACK_FILL = "${ext.spring.cache.redis-caffeine.value-back-fill:true}";
+    
 }

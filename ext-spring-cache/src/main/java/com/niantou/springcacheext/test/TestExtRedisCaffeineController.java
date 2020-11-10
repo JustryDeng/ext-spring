@@ -32,8 +32,8 @@ public class TestExtRedisCaffeineController {
     @GetMapping("/two")
     @ExtCacheable(
             cacheNames = "cache-name123", key = "'two' + #param1",
-            redis = @Redis(useRedisTemplate = "redisTemplate", expireTime = 20),
-            caffeine = @Caffeine(expireTime = 40, maximumSize = 3)
+            redis = @Redis(useRedisTemplate = "redisTemplate", expireTime = 600),
+            caffeine = @Caffeine(expireTime = 300, maximumSize = 3)
     )
     public Object two(String param1) {
         System.err.println("进two了\t" + param1);
