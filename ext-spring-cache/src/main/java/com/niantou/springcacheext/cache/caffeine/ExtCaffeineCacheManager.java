@@ -41,7 +41,9 @@ public class ExtCaffeineCacheManager extends CaffeineCacheManager {
     
     /**
      * 创建Cache时，{@link CaffeineCacheManager#createCaffeineCache(String)} 会调用此方法的，
-     * 重写了此方法就相当于重写了createCaffeineCache
+     * 重写了此方法就相当于重写了createCaffeineCache。
+     * <p>
+     * TIPS. 低版本的spring-boot里面，是没有此方法的，那时就需要重写{@link CaffeineCacheManager#createCaffeineCache(String)}了
      */
     @NonNull
     @Override

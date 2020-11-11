@@ -1,10 +1,12 @@
 package com.niantou.springcacheext.cache.event.listener;
 
 import com.niantou.springcacheext.author.JustryDeng;
-import com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholderBase;
+import com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholder;
 import com.niantou.springcacheext.cache.event.EnableExtSpringCacheEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.context.ApplicationListener;
 
 /**
@@ -18,10 +20,10 @@ public class EnableExtSpringCacheListener implements ApplicationListener<EnableE
     
     public static final String BEAN_NAME = "enableExtSpringCacheListener";
     
-    @Value(ExtCacheConfigPlaceholderBase.PRINT_BANNER_PLACEHOLDER)
+    @Value(ExtCacheConfigPlaceholder.PRINT_BANNER_PLACEHOLDER)
     private boolean printBanner;
     
-    private static final String BANNER = " ________          _     ______                    _                     "
+    private static final String BANNER = "\n ________          _     ______                    _                     "
             + "______                __             \n"
             + "|_   __  |        / |_ .' ____ \\                  (_)                  .' ___  |              [  |   "
             + "         \n"
@@ -33,14 +35,16 @@ public class EnableExtSpringCacheListener implements ApplicationListener<EnableE
             + "| | | || \\__., \n"
             + "|________|[__]`\\_]\\__/  \\______.'| ;.__/ [___]   [___][___||__].',__`  `.____ .'\\'-;__/'.___"
             + ".'[___]|__]'.__.' \n"
-            + "                                [__|                          ( ( __))                                "
-            + "        by JustryDeng";
+            + "                                [__|                          ( ( __))                                ";
+    
+    private static final String AUTHOR = "\n                                                                                                        by JustryDeng";
     
     @Override
     @SuppressWarnings("NullableProblems")
     public void onApplicationEvent(EnableExtSpringCacheEvent event) {
         if (printBanner) {
-            log.info("\n -> {}", BANNER);
+            log.info(AnsiOutput.toString(AnsiColor.DEFAULT, BANNER, AnsiColor.BRIGHT_GREEN, AUTHOR));
         }
     }
+    
 }

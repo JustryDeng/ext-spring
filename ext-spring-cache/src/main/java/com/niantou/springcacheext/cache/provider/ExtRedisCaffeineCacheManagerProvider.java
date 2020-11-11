@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholderBase.REDIS_CAFFEINE_CAFFEINE_AS_FIRST_CACHE;
-import static com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholderBase.REDIS_CAFFEINE_RESPONSE_SPRING_CONTEXT_PLACEHOLDER;
-import static com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholderBase.REDIS_CAFFEINE_VALUE_BACK_FILL;
+import static com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholder.REDIS_CAFFEINE_CAFFEINE_AS_FIRST_CACHE;
+import static com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholder.REDIS_CAFFEINE_RESPONSE_SPRING_CONTEXT_PLACEHOLDER;
+import static com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholder.REDIS_CAFFEINE_VALUE_BACK_FILL;
 
 /**
  * redis-caffeine CacheManager provider, 用于管理所有的 ExtRedisCaffeineCacheManager

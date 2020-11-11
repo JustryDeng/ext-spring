@@ -20,6 +20,7 @@ import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.Collections;
 
+import static com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholder.USE_DEFAULT_CACHE_MANAGER_IF_MISS;
 import static com.niantou.springcacheext.cache.support.ExtCacheHelper.LOG_PREFIX;
 
 /**
@@ -34,7 +35,7 @@ public class ExtCacheManager implements CacheManager, SmartInitializingSingleton
     
     public static final String BEAN_NAME = "extCacheManager";
     
-    @Value("${ext.spring.cache.use-default-cache-manager-if-miss:true}")
+    @Value(USE_DEFAULT_CACHE_MANAGER_IF_MISS)
     private boolean useDefaultCacheManagerIfMiss;
     
     @Autowired

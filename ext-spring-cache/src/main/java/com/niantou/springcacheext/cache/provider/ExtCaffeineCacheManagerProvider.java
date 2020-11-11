@@ -22,7 +22,7 @@ import org.springframework.lang.Nullable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholderBase.CAFFEINE_RESPONSE_SPRING_CONTEXT_PLACEHOLDER;
+import static com.niantou.springcacheext.cache.constant.ExtCacheConfigPlaceholder.CAFFEINE_RESPONSE_SPRING_CONTEXT_PLACEHOLDER;
 
 /**
  * redis Caffeine provider, 用于管理所有的 ExtCaffeineCacheManager
