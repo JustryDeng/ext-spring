@@ -37,7 +37,7 @@ public class EnableExtSpringCacheListener implements ApplicationListener<EnableE
             + ".'[___]|__]'.__.' \n"
             + "                                [__|                          ( ( __))                                ";
     
-    private static final String AUTHOR = "\n                                                                                                        by JustryDeng";
+    private static final String AUTHOR = "       by JustryDeng";
     
     @Override
     @SuppressWarnings("NullableProblems")
