@@ -148,7 +148,6 @@ public class ExtCacheChecker implements ExtCacheInitParserBeanPostProcessor, App
             return;
         }
         StringBuilder sb = new StringBuilder(64);
-        sb.append(LOG_PREFIX);
         for (ExtCacheableOop co : oopCollection) {
             sb.append(String.format("\n\t### see class[%s], method[%s]", co.getClazz().getName(), co.getMethod().getName()));
         }
