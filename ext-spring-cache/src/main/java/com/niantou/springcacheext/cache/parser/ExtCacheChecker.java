@@ -58,7 +58,6 @@ public class ExtCacheChecker implements ExtCacheInitParserBeanPostProcessor, App
         return bean;
     }
     
-    
     /**
      * 校验cacheName不能为空
      *
