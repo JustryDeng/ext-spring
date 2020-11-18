@@ -11,7 +11,7 @@ import java.time.temporal.ChronoUnit;
 /**
  * {@link Redis}中的信息的容器类
  *
- * P.S. 每个字段的语意对应Redis见中的字段即可
+ * P.S. 每个字段的语意见Redis中对应的字段即可
  *
  * @author {@link JustryDeng}
  * @since 2020/11/4 19:08:31

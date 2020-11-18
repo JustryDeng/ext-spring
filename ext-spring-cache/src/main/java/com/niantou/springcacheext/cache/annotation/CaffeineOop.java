@@ -13,7 +13,7 @@ import java.time.temporal.ChronoUnit;
 /**
  * {@link Caffeine}中的信息的容器类
  *
- * P.S. 每个字段的语意对应Local见中的字段即可
+ * P.S. 每个字段的语意见Caffeine中对应的字段即可
  *
  * @author {@link JustryDeng}
  * @since 2020/11/4 19:08:31
