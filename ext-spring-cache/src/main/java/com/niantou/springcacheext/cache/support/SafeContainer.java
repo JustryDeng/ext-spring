@@ -40,6 +40,10 @@ public final class SafeContainer {
     @SuppressWarnings("AlibabaThreadLocalShouldRemove")
     public static final ThreadLocal<Stack<ExtCacheCounter>> THREAD_LOCAL_CACHE_COUNTER = new ThreadLocal<>();
     
+    /** 标识：是否刷新当前缓存 */
+    @SuppressWarnings("AlibabaThreadLocalShouldRemove")
+    public static final ThreadLocal<Boolean> THREAD_LOCAL_REFRESH_CURR_CACHE = new ThreadLocal<>();
+    
     /** ExtCacheableOop容器 */
     public static final List<ExtCacheableOop> EXT_CACHEABLE_CONTAINER =
             Collections.synchronizedList(new ArrayList<>(64));

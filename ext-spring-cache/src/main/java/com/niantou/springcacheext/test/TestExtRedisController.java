@@ -1,7 +1,6 @@
 package com.niantou.springcacheext.test;
 
 import com.niantou.springcacheext.author.JustryDeng;
-import com.niantou.springcacheext.cache.annotation.Caffeine;
 import com.niantou.springcacheext.cache.annotation.ExtCacheable;
 import com.niantou.springcacheext.cache.annotation.Redis;
 import com.niantou.springcacheext.cache.enums.RedisExpireStrategyEnum;
@@ -27,6 +26,7 @@ public class TestExtRedisController {
     @GetMapping("/one")
     @Cacheable(cacheNames = "JustryDeng", key = "'one' + #param1")
     public Object one(String param1) {
+        System.err.println("进来了one");
         return param1 + ThreadLocalRandom.current().nextInt(100);
     }
     
@@ -39,6 +39,7 @@ public class TestExtRedisController {
                   )
     )
     public Object two(String param1) {
+        System.err.println("进来了two");
         return param1 + ThreadLocalRandom.current().nextInt(100);
     }
     
@@ -46,6 +47,7 @@ public class TestExtRedisController {
     @ExtCacheable(cacheNames = "JustryDeng", key = "'two2' + #param1", redis = @Redis(useRedisTemplate = "redisTemplate",
             expireTime = 100, expireStrategy = RedisExpireStrategyEnum.CUSTOM))
     public Object two2(String param1) {
+        System.err.println("进来了two2");
         return param1 + ThreadLocalRandom.current().nextInt(100);
     }
 }

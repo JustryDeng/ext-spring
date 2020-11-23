@@ -5,7 +5,9 @@ import com.niantou.springcacheext.cache.annotation.ExtCacheableOop;
 import com.niantou.springcacheext.cache.annotation.RedisOop;
 import com.niantou.springcacheext.cache.enums.RedisExpireStrategyEnum;
 import com.niantou.springcacheext.cache.support.ExtCacheHelper;
+import com.niantou.springcacheext.cache.support.SafeContainer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.cache.support.SimpleValueWrapper;
 import org.springframework.data.redis.cache.RedisCache;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -54,6 +56,17 @@ public class ExtRedisCache extends RedisCache {
         this.cacheWriter = cacheWriter;
         this.cacheConfig = cacheConfig;
         this.cacheConfigMap = cacheConfigMap;
+    }
+    
+    @Override
+    public ValueWrapper get(Object key) {
+        Boolean refreshCurrCache = SafeContainer.THREAD_LOCAL_REFRESH_CURR_CACHE.get();
+        if (BooleanUtils.isTrue(refreshCurrCache)) {
+            // 这里返回null, 那么程序就会走方法里面的逻辑， 走完后再把结果放入缓存， 继而：变相实现了刷新当前key的缓存
+            log.info(" refresh curr key[{}]'s cache-value", key);
+            return null;
+        }
+        return super.get(key);
     }
     
     @Override

@@ -3,7 +3,6 @@ package com.niantou.springcacheext.test;
 import com.niantou.springcacheext.author.JustryDeng;
 import com.niantou.springcacheext.cache.annotation.Caffeine;
 import com.niantou.springcacheext.cache.annotation.ExtCacheable;
-import com.niantou.springcacheext.cache.enums.CaffeineExpireStrategyEnum;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

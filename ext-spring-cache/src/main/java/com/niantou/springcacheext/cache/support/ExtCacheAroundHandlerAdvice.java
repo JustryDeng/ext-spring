@@ -3,6 +3,7 @@ package com.niantou.springcacheext.cache.support;
 import com.niantou.springcacheext.author.JustryDeng;
 import com.niantou.springcacheext.cache.model.ExtCacheCounter;
 import com.niantou.springcacheext.cache.model.ViaMethod;
+import com.niantou.springcacheext.cache.refresh.CacheValueRefresher;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -10,6 +11,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 
 import java.lang.reflect.Method;
@@ -31,6 +33,9 @@ public class ExtCacheAroundHandlerAdvice implements Ordered {
     public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 2;
     
     public static final String BEAN_NAME = "extCacheAroundHandler";
+    
+    @Autowired(required = false)
+    private CacheValueRefresher cacheValueRefresher;
 
     @Pointcut("@annotation(com.niantou.springcacheext.cache.annotation.ExtCacheable)")
     public void point() {
@@ -38,6 +43,14 @@ public class ExtCacheAroundHandlerAdvice implements Ordered {
 
     @Before(value = "point()")
     public void beforeAdvice(JoinPoint joinPoint) {
+        // thread-local refresher
+        if (cacheValueRefresher != null) {
+            boolean refresh = cacheValueRefresher.refresh(joinPoint);
+            if (refresh) {
+                SafeContainer.THREAD_LOCAL_REFRESH_CURR_CACHE.set(true);
+            }
+        }
+        // thread-local stack
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
         Method method = signature.getMethod();
         Stack<ExtCacheCounter> stack = SafeContainer.THREAD_LOCAL_CACHE_COUNTER.get();
@@ -61,6 +74,9 @@ public class ExtCacheAroundHandlerAdvice implements Ordered {
     
     @AfterReturning(value = "point()")
     public void afterReturningAdvice() {
+        // thread-local refresher
+        SafeContainer.THREAD_LOCAL_REFRESH_CURR_CACHE.remove();
+        // thread-local stack
         Stack<ExtCacheCounter> stack = SafeContainer.THREAD_LOCAL_CACHE_COUNTER.get();
         if (stack == null) {
             return;
@@ -85,4 +101,5 @@ public class ExtCacheAroundHandlerAdvice implements Ordered {
     public int getOrder() {
         return ORDER;
     }
+    
 }
