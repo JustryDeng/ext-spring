@@ -66,7 +66,11 @@ public class ExtRedisCache extends RedisCache {
             log.info(" refresh curr key[{}]'s cache-value", key);
             return null;
         }
-        return super.get(key);
+        ValueWrapper valueWrapper = super.get(key);
+        if (valueWrapper != null) {
+            log.info(" got non-null valueWrapper from redis-cache, by key[{}]", key);
+        }
+        return valueWrapper;
     }
     
     @Override

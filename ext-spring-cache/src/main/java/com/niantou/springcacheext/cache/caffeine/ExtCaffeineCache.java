@@ -34,6 +34,10 @@ public class ExtCaffeineCache extends CaffeineCache {
             log.info(" refresh curr key[{}]'s cache-value", key);
             return null;
         }
-        return super.get(key);
+        ValueWrapper valueWrapper = super.get(key);
+        if (valueWrapper != null) {
+            log.info(" got non-null valueWrapper from caffeine-cache, by key[{}]", key);
+        }
+        return valueWrapper;
     }
 }
